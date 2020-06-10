@@ -6,3 +6,9 @@
 
 ## About
 - Custom pop-up UI.
+
+## Author
+kokonak, <a src="mailto:kokonak7@gmail.com">kokonak7@gmail.com</a>
+
+## License
+_CustomPopupUI_ is available under the MIT license. See the [LICENSE](https://github.com/kokonak/SlidingPuzzleView/blob/master/LICENSE) file for more info.
