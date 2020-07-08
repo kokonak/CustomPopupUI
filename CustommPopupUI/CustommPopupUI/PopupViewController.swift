@@ -53,13 +53,7 @@ class PopupViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white.withAlphaComponent(0.5)
-        
-        self.popupView.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
-    }
-    
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        
+
         let margin: CGFloat = 20
         self.popupView.frame = CGRect(x: margin, y: (self.view.frame.height - 200)/2, width: self.view.frame.width - margin * 2, height: 200)
         
@@ -71,10 +65,12 @@ class PopupViewController: UIViewController {
         
         let height: CGFloat = (self.okButton.frame.minY - margin) - (self.titleLabel.frame.maxY + margin)
         self.textLabel.frame = CGRect(x: margin, y: self.titleLabel.frame.maxY + margin, width: width, height: height)
+        
+        self.popupView.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         self.showPopup()
     }
     
@@ -83,27 +79,18 @@ class PopupViewController: UIViewController {
     }
     
     func showPopup() {
-        DispatchQueue.main.async {
-            self.popupView.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.2, options: .curveLinear, animations: {
-                self.popupView.transform = CGAffineTransform(scaleX: 1, y: 1)
-            }) { (finished: Bool) in
-                self.popupView.transform = CGAffineTransform.identity
-            }
+        self.popupView.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.2, options: .curveLinear, animations: {
+            self.popupView.transform = CGAffineTransform(scaleX: 1, y: 1)
+        }) { (finished: Bool) in
+            self.popupView.transform = CGAffineTransform.identity
         }
     }
     func closePopup() {
-        DispatchQueue.main.async {
-            let fakeView: UIView = self.popupView.snapshotView(afterScreenUpdates: false)!
-            fakeView.frame = self.popupView.frame
-            self.view.addSubview(fakeView)
-
-            self.popupView.isHidden = true
-            UIView.animate(withDuration: 0.2, animations: {
-                fakeView.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
-            }, completion: { (finisehd: Bool) in
-                self.dismiss(animated: false, completion: nil)
-            })
-        }
+        UIView.animate(withDuration: 0.2, animations: {
+            self.popupView.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
+        }, completion: { (finisehd: Bool) in
+            self.dismiss(animated: false, completion: nil)
+        })
     }
 }
