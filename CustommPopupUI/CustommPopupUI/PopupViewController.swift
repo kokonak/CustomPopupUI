@@ -8,12 +8,41 @@
 
 import UIKit
 
-class PopupViewController: UIViewController {
+final class PopupViewController: UIViewController {
     
-    private let popupView: UIView = UIView()
-    private let okButton: UIButton = UIButton()
-    private let titleLabel: UILabel = UILabel()
-    private let textLabel: UILabel = UILabel()
+    private let popupView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.white
+        view.layer.cornerRadius = 20
+        return view
+    }()
+
+    private lazy var okButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("OK", for: .normal)
+        button.backgroundColor = UIColor(red:0.03, green:0.02, blue:0.20, alpha:1.00)
+        button.layer.cornerRadius = 10
+        button.addTarget(self, action: #selector(okButtonTouch), for: .touchUpInside)
+        return button
+    }()
+
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Welcome!"
+        label.textAlignment = .center
+        label.textColor = UIColor.black
+        label.font = UIFont.systemFont(ofSize: 30, weight: .bold)
+        return label
+    }()
+
+    private let textLabel: UILabel = {
+        let label = UILabel()
+        label.text = "this is a custom popup ui example"
+        label.textAlignment = .center
+        label.textColor = UIColor.black
+        label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        return label
+    }()
 
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -23,70 +52,74 @@ class PopupViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    override func loadView() {
-        super.loadView()
-        
-        self.popupView.backgroundColor = UIColor.white
-        self.popupView.layer.cornerRadius = 20
-        self.view.addSubview(self.popupView)
-        
-        self.titleLabel.text = "Welcome!"
-        self.titleLabel.textAlignment = .center
-        self.titleLabel.textColor = UIColor.black
-        self.titleLabel.font = UIFont.systemFont(ofSize: 30, weight: .bold)
-        self.popupView.addSubview(self.titleLabel)
-        
-        self.textLabel.text = "this is a custom popup ui example"
-        self.textLabel.textAlignment = .center
-        self.textLabel.textColor = UIColor.black
-        self.textLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
-        self.popupView.addSubview(self.textLabel)
-        
-        self.okButton.setTitle("OK", for: .normal)
-        self.okButton.backgroundColor = UIColor(red:0.03, green:0.02, blue:0.20, alpha:1.00)
-        self.okButton.layer.cornerRadius = 10
-        self.okButton.addTarget(self, action: #selector(okButtonTouch(_:)), for: .touchUpInside)
-        self.popupView.addSubview(self.okButton)
-    }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.white.withAlphaComponent(0.5)
+        setupUI()
+    }
 
-        let margin: CGFloat = 20
-        self.popupView.frame = CGRect(x: margin, y: (self.view.frame.height - 200)/2, width: self.view.frame.width - margin * 2, height: 200)
-        
-        let width: CGFloat = self.popupView.frame.width - margin * 2
-        self.titleLabel.frame = CGRect(x: margin, y: margin, width: width, height: 30)
-        
-        let buttonHeight: CGFloat = 40
-        self.okButton.frame = CGRect(x: margin, y: self.popupView.frame.height - margin - buttonHeight, width: width, height: buttonHeight)
-        
-        let height: CGFloat = (self.okButton.frame.minY - margin) - (self.titleLabel.frame.maxY + margin)
-        self.textLabel.frame = CGRect(x: margin, y: self.titleLabel.frame.maxY + margin, width: width, height: height)
-        
-        self.popupView.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
+    private func setupUI() {
+        view.backgroundColor = UIColor.white.withAlphaComponent(0.5)
+
+        view.addSubview(popupView)
+        popupView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            popupView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            popupView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            popupView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 20),
+        ])
+
+        popupView.addSubview(titleLabel)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: popupView.topAnchor, constant: 20),
+            titleLabel.leadingAnchor.constraint(equalTo: popupView.leadingAnchor, constant: 20),
+            titleLabel.trailingAnchor.constraint(equalTo: popupView.trailingAnchor, constant: -20)
+        ])
+
+        popupView.addSubview(textLabel)
+        textLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            textLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
+            textLabel.leadingAnchor.constraint(equalTo: popupView.leadingAnchor, constant: 20),
+            textLabel.trailingAnchor.constraint(equalTo: popupView.trailingAnchor, constant: -20),
+        ])
+
+        popupView.addSubview(okButton)
+        okButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            okButton.topAnchor.constraint(equalTo: textLabel.bottomAnchor, constant: 20),
+            okButton.leadingAnchor.constraint(equalTo: popupView.leadingAnchor, constant: 20),
+            okButton.trailingAnchor.constraint(equalTo: popupView.trailingAnchor, constant: -20),
+            okButton.bottomAnchor.constraint(equalTo: popupView.bottomAnchor, constant: -20),
+            okButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+
+        popupView.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.showPopup()
+        showPopup()
     }
     
-    @objc private func okButtonTouch(_ sender: UIButton) {
-        self.closePopup()
+    @objc private func okButtonTouch() {
+        closePopup()
     }
-    
-    func showPopup() {
-        self.popupView.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.2, options: .curveLinear, animations: {
-            self.popupView.transform = CGAffineTransform(scaleX: 1, y: 1)
-        }) { (finished: Bool) in
+
+    private func showPopup() {
+        UIView.animate(
+            withDuration: 0.5,
+            delay: 0,
+            usingSpringWithDamping: 0.6,
+            initialSpringVelocity: 0.2,
+            options: .curveLinear
+        ) {
             self.popupView.transform = CGAffineTransform.identity
         }
     }
-    func closePopup() {
+
+    private func closePopup() {
         UIView.animate(withDuration: 0.2, animations: {
             self.popupView.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
         }, completion: { (finisehd: Bool) in
